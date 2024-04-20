@@ -1,39 +1,37 @@
 import Input from "./input.js";
-import Shoot from "./shoot.js";
+import Entity from "./entity.js";
+import Bullet from "./bullet.js";
+import * as PIXI from 'pixi.js';
 
-export default class Player {
+export default class Player extends Entity {
     constructor() {
-        this.shoot = new Shoot(this)
+        super();
         this.input = new Input()
         this.lookDirection = { x: 0, y: 0 }
-        this.direction = { x: 0, y: 0 }
-        this.radius = 50;
+        this.radius = 20;
+        this.speed = 5;
+        this.update = this.update.bind(this);
+        this.input.addPointerDownHandler(this.shoot.bind(this));
+        this.bullets = [];
+        this.health = 100;
+        this.colors = {
+            green: 0x00FF00,
+            yellow: 0xFFEA00,
+            red: 0xFF0000,
+        }    
+
         this.create();
-        this.speed = 20;
+
+        app.ticker.add(this.update, this);
     }
-
-    get x() { return this.graphics.x }
-    get y() { return this.graphics.y }
-
-    set x(value) { this.graphics.x = value }
-    set y(value) { this.graphics.y = value }
 
     create() {
         this.graphics = new PIXI.Graphics();
-        this.graphics.beginFill(0xAA33BB)
-            .lineStyle(4, 0xFFEA00, 1)
+        this.graphics.beginFill(this.colors.green)
+            .lineStyle(4, 0xFFFFFF, 1)
             .drawCircle(0, 0, this.radius)
-            .drawRect(this.x - this.radius * 1.5, this.y, 50, 5)
+            .drawRect(-this.radius * 1.5, 0, 50, 5)
             .endFill()
-    }
-
-    setPosition(x, y) {
-        this.x = x
-        this.y = y
-    }
-
-    checkInBorders(x, y) {
-        return x + this.radius < app.stage.width && x - this.radius > 0 && y - this.radius > 0 && y + this.radius < app.stage.height
     }
 
     move(dt) {
@@ -41,6 +39,7 @@ export default class Player {
         this.direction = direction;
         const x = this.x + direction.x * this.speed * dt;
         const y = this.y + direction.y * this.speed * dt;
+
         const canMove = this.checkInBorders(x, y)
         if (canMove) {
             this.x = x;
@@ -50,15 +49,36 @@ export default class Player {
     rotate() {
         const { x: px, y: py } = this.input.pointer;
         const { x: mx, y: my } = this;
-        var dist_Y = my - py;
-        var dist_X = mx - px;
-        var angle = Math.atan2(dist_Y, dist_X);
-        this.graphics.rotation = angle;
-        this.lookDirection = this.input.getLookDirection({ x: this.x, y: this.y })
-    }
+        const dy = my - py;
+        const dx = mx - px;
+        const angle = Math.atan2(dy, dx);
 
-    destroy() {
-        app.stage.removeChild(this.graphics)
+        this.graphics.rotation = angle;
+
+        const pointer = this.input.pointer;
+        this.lookDirection.x = pointer.x - this.x;
+        this.lookDirection.y = pointer.y - this.y;
+        this.lookDirection = utils.normalize(this.lookDirection)
+    }
+    
+    shoot() {
+        const bullet = new Bullet({x: this.x, y: this.y }, this.lookDirection);
+        this.bullets.push(bullet);
+        bullet.onDestroy(bullet => {
+            this.bullets = this.bullets.filter(b => b !== bullet);
+        })
+    }
+    
+    takeDamage(damage = 30) {
+        this.health -= damage; 
+        this.graphics.clear();
+        const color = this.health > 50 ? this.colors.green : this.health > 20 ? this.colors.yellow : this.colors.red;
+
+        this.graphics.beginFill(color)
+            .lineStyle(4, 0xFFFFFF, 1)
+            .drawCircle(0, 0, this.radius)
+            .drawRect(-this.radius * 1.5, 0, 50, 5)
+            .endFill()
     }
 
     update(dt) {
