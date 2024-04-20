@@ -2,26 +2,43 @@ import Input from "./input.js";
 import Shoot from "./shoot.js";
 
 export default class Player {
-    constructor(x = 0, y = 0, width = 100, height = 100, speed = 2) {
+    constructor() {
         this.shoot = new Shoot(this)
         this.input = new Input()
+        this.width = 50;
+        this.height = 50;
+        this.speed = 10;
         this.lookDirection = {x: 0, y: 0}
         this.direction = {x: 0, y: 0}
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
         this.create();
-        this.speed = speed;
+    }
+
+    get x() {
+        return this.graphics.x;
+    }
+    get y() {
+        return this.graphics.y;
+    }
+    
+    set x(value) {
+        this.graphics.x = value;
+    }
+    set y(value) {
+        this.graphics.y = value;
     }
 
     create() {
         this.graphics = new PIXI.Graphics();
         this.graphics.beginFill(0xAA33BB)
-            .lineStyle(4, 0xFFEA00, 1)
-            .drawRect(this.x - this.width/2, this.y - this.height /2, this.width, this.height)
-            .drawRect(this.x - this.width, this.y, 50, 5)
+            .lineStyle(1, 0xFFEA00, 1)
+            .drawRect(-this.width / 2, -this.height / 2, this.width, this.height)
+            .drawRect(-this.width, 0, 50, 5)
             .endFill()
+    }
+    
+    setPosition(x, y) {
+        this.x = x;
+        this.y = y;
     }
 
     move(dt) {
@@ -29,8 +46,6 @@ export default class Player {
         this.direction = direction;
         this.x += direction.x * this.speed * dt;
         this.y += direction.y * this.speed * dt;
-        this.graphics.x = this.x;
-        this.graphics.y = this.y;
     }
     rotate(){  
         const {x: px, y: py} = this.input.pointer;
@@ -45,7 +60,5 @@ export default class Player {
     update(dt) {
         this.move(dt)
         this.rotate()
-        //this.draw()
-
     }
 }
