@@ -17,9 +17,8 @@ export default class Input {
         window.addEventListener("keydown", this.onKeyDown)
         window.addEventListener("keyup", this.onKeyUp)
         this.app.stage.interactive = true;
-       this.app.stage.on('pointermove', this.onPointerMove)
-       this.app.stage.on('pointerdown', this.onPointerDown.bind(this))
-        
+        this.app.stage.on('pointermove', this.onPointerMove)
+        this.app.stage.on('pointerdown', this.onPointerDown.bind(this))
     }
 
     reset() {
@@ -55,12 +54,6 @@ export default class Input {
         if (this.keys.d) { this.direction.x += 1 }
         return this.direction
         
-    }
-
-    getLookDirection(position) {  
-        this.lookDirection.x = this.pointer.x - position.x
-        this.lookDirection.y = this.pointer.y - position.y
-        this.lookDirection = utils.normalize(this.lookDirection)
     }
     
 }

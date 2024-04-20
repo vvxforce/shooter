@@ -1,52 +1,54 @@
-export default class Bullet {
+import * as PIXI from 'pixi.js';
+import Entity from './entity.js';
+
+export default class Bullet extends Entity {
+    /**
+     * @param {Vector} origin 
+     * @param {Vector} direction 
+     */
     constructor(origin, direction) {
+        super();
         this.speed = 20;
-        this.size = 10;
-        this.direction = direction;
+        this.radius = 10;
+        this.direction = {x: direction.x, y: direction.y};
         this.create(origin);
-        app.ticker.add(this.move.bind(this))
+        app.ticker.add(this.update, this);
     }
     
-    get x() {
-        return this.graphics.x;
-    }
-    
-    get y() {
-        return this.graphics.y;
-    }
-    
-    set x(value) {
-        this.graphics.x = value;
-    }
-
-    set y(value) {
-        this.graphics.y = value;
-    }
-
+    /**
+     * @param {Vector} origin 
+     */
     create(origin) {
         this.graphics = new PIXI.Graphics();
-        this.graphics.beginFill(0xAA33BB)
-            .drawCircle(0, 0, this.size)
+        this.graphics.beginFill(0xFFFF00)
+            .drawCircle(0, 0, this.radius)
             .endFill();
+        app.stage.addChild(this.graphics);
+
         this.x = origin.x;
         this.y = origin.y;
-        app.stage.addChild(this.graphics)
     }  
-
-    checkInBorders(x, y) {
-        return  x + this.size /2 < app.stage.width && x - this.size /2 > 0 && y - this.size /2 > 0 && y + this.size /2< app.stage.height}
- 
+    
+    onDestroy(cb) {
+        this.destroyCb = cb;
+    }
+    
+    destroy() {
+        super.destroy();
+        this.destroyCb(this);
+    }
 
     move(dt) {
         const x = this.x + this.direction.x * this.speed * dt;
         const y = this.y + this.direction.y * this.speed * dt;
 
-        const canMove = this.checkInBorders(x,y)
+        const canMove = this.checkInBorders(x, y)
+
         if (canMove) {
             this.x = x;
             this.y = y;
         } else {
-            app.stage.removeChild(this.graphics)
+            this.destroy();
         }
     }
 }
