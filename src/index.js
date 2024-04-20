@@ -13,32 +13,34 @@ class PixiApp {
     }
 
     create() {
+        this.size = {
+            width: window.innerWidth, 
+            height: window.innerHeight,
+        }
         this.app = new PIXI.Application({
-            width: 500,
-            height: 500,
+            width: this.size.width,
+            height: this.size.height,
             transparent: false,
             antialias: true
         });
         window.app = this.app;
-        this.size = {width: window.innerWidth, height: window.innerHeight}
 
         const background = new PIXI.Graphics();
         background.beginFill(0x000000)
             .drawRect(0,0, this.size.width, this.size.height)
             .endFill();
 
-            background.interactive = true;
-
-            this.app.stage.addChild(background)
+        background.interactive = true;
+        this.app.stage.addChild(background)
 
         document.body.appendChild(this.app.view);
         this.app.renderer.backgroundColor = 0x23395D;
-        this.app.renderer.view.style.position = 'absolute';
         
         this.app.renderer.resize(this.size.width,this.size.height)
 
         this.input = new Input(this.app);
         this.player = new Player();
+        this.player.setPosition(this.size.width / 2, this.size.height / 2);
         this.app.stage.addChild(this.player.graphics)
         
         
