@@ -28,7 +28,6 @@ export default class Input {
     }
     onKeyDown(ev) {
         this.keys[ev.key] = true;
-        //console.log(ev.key)
     }
     onKeyUp(ev) {
         this.keys[ev.key] = false;
@@ -36,7 +35,6 @@ export default class Input {
 
     onPointerMove(ev) {
         Object.assign(this.pointer, ev.data.global)
-        //console.log(this.pointer)
     }
 
     onPointerDown() {
@@ -56,19 +54,13 @@ export default class Input {
         if (this.keys.a) { this.direction.x -= 1 }
         if (this.keys.d) { this.direction.x += 1 }
         return this.direction
+        
     }
 
-    getLookDirection(position) {    
+    getLookDirection(position) {  
         this.lookDirection.x = this.pointer.x - position.x
         this.lookDirection.y = this.pointer.y - position.y
-        const {x,y} = this.lookDirection
-        const length = Math.sqrt(x * x + y * y);
-        // Check if the length is not zero to avoid division by zero
-    if (length !== 0) {
-        // Normalize the vector
-        this.lookDirection.x /= length;
-        this.lookDirection.y /= length;
+        this.lookDirection = utils.normalize(this.lookDirection)
     }
-    return this.lookDirection
-    }
+    
 }

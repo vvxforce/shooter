@@ -31,10 +31,22 @@ export default class Bullet {
         this.x = origin.x;
         this.y = origin.y;
         app.stage.addChild(this.graphics)
-    }   
+    }  
+
+    checkInBorders(x, y) {
+        return  x + this.size /2 < app.stage.width && x - this.size /2 > 0 && y - this.size /2 > 0 && y + this.size /2< app.stage.height}
+ 
 
     move(dt) {
-        this.x += this.direction.x * this.speed * dt;
-        this.y += this.direction.y * this.speed * dt;
+        const x = this.x + this.direction.x * this.speed * dt;
+        const y = this.y + this.direction.y * this.speed * dt;
+
+        const canMove = this.checkInBorders(x,y)
+        if (canMove) {
+            this.x = x;
+            this.y = y;
+        } else {
+            app.stage.removeChild(this.graphics)
+        }
     }
 }

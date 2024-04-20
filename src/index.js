@@ -1,9 +1,11 @@
 import * as PIXI from '../node_modules/pixi.js/dist/pixi.min.mjs';
 import Player from './player.js';
 import Input from './input.js';
+import Enemy from './enemy.js';
+import './utils.js'
 
 
-class PixiApp {
+export default class PixiApp {
     constructor() {
         this.create();
     }
@@ -42,24 +44,43 @@ class PixiApp {
         this.player = new Player();
         this.player.setPosition(this.size.width / 2, this.size.height / 2);
         this.app.stage.addChild(this.player.graphics)
+
+        this.enemies = []
+
+
         
         
 
 
         this.pointer = {x: 0, y: 0}
 
+        this.createEnemy()
 
 
+    }
 
+    createEnemy() {
+        const enemy = new Enemy(this.player)
+        this.enemies.push(enemy)
+        enemy.setRandomPosition()
     }
 
 
 
     loop(dt) {
+
+
         this.player.update(dt)
-        const direction = this.input.getDirection()
-        //this.rect.move(direction, dt)
-        //console.log(direction)
+        //const direction = this.input.getDirection()
+        this.enemies.forEach(e=> {
+            e.update(dt)
+            const radiusSum = this.player.radius + e.radius
+            const distance = utils.distance(this.player, e)
+            if (radiusSum > distance) {
+                this.player.destroy()
+                e.destroy()
+            }
+        })
     }
 
 }
