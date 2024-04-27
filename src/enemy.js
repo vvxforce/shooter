@@ -1,20 +1,15 @@
 import Input from "./input.js";
 import Shoot from "./shoot.js";
+import Entity from "./entity.js";
 
-export default class Enemy {
+export default class Enemy extends Entity{
     constructor(player) {
+        super()
         this.player = player;
-        this.direction = { x: 0, y: 0 }
         this.radius = 20;
         this.create();
-        this.speed = 5;
+        this.speed = 2;
     }
-
-    get x() { return this.graphics.x }
-    get y() { return this.graphics.y }
-
-    set x(value) { this.graphics.x = value }
-    set y(value) { this.graphics.y = value }
 
     create() {
         this.graphics = new PIXI.Graphics();
@@ -28,23 +23,20 @@ export default class Enemy {
     }
 
     setRandomPosition() {
+        //
+        const vector = {x:Math.random() -.5, y: Math.random() -.5}
+        vector.x = vector.x + Math.sign(vector.x ) * app.stage.width
+        vector.y = vector.y + Math.sign(vector.y ) * app.stage.height
+        console.log(vector.x * app.stage.width)
         const rand = (min, max) => Math.random() * (max - min) + min
         this.x = rand(0, app.stage.width)
         this.y = rand(0, app.stage.height)
     }
 
-    checkInBorders(x, y) {
-        return x + this.radius < app.stage.width && x - this.radius > 0 && y - this.radius > 0 && y + this.radius < app.stage.height
-    }
-
-    destroy() {
-        app.stage.removeChild(this.graphics)
-    }
-
     move(dt) {
         let direction = { x: this.player.x - this.x, y: this.player.y - this.y }
         direction = utils.normalize(direction)
-        console.log(direction)
+        //onsole.log(direction)
         const x = this.x + direction.x * this.speed * dt;
         const y = this.y + direction.y * this.speed * dt;
         const canMove = this.checkInBorders(x, y)

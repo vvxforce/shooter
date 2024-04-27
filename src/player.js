@@ -1,22 +1,17 @@
 import Input from "./input.js";
+import Bullet from "./bullet.js";
 import Shoot from "./shoot.js";
+import Entity from "./entity.js";
 
-export default class Player {
+export default class Player extends Entity {
     constructor() {
-        this.shoot = new Shoot(this)
-        this.input = new Input()
-        this.lookDirection = { x: 0, y: 0 }
-        this.direction = { x: 0, y: 0 }
-        this.radius = 50;
-        this.create();
-        this.speed = 20;
+        super()
+        //this.shoot = new Shoot(this)
+        this.input = new Input();
+        this.bullets = [];
+        this.input.addPointerDownHandler(this.shoot.bind(this));
+        this.create()
     }
-
-    get x() { return this.graphics.x }
-    get y() { return this.graphics.y }
-
-    set x(value) { this.graphics.x = value }
-    set y(value) { this.graphics.y = value }
 
     create() {
         this.graphics = new PIXI.Graphics();
@@ -27,13 +22,12 @@ export default class Player {
             .endFill()
     }
 
-    setPosition(x, y) {
-        this.x = x
-        this.y = y
-    }
+    update(dt) {
+        super.update(dt)
+        this.bullets.forEach(e=> {
+            e.update(dt)
+        })
 
-    checkInBorders(x, y) {
-        return x + this.radius < app.stage.width && x - this.radius > 0 && y - this.radius > 0 && y + this.radius < app.stage.height
     }
 
     move(dt) {
@@ -54,15 +48,24 @@ export default class Player {
         var dist_X = mx - px;
         var angle = Math.atan2(dist_Y, dist_X);
         this.graphics.rotation = angle;
-        this.lookDirection = this.input.getLookDirection({ x: this.x, y: this.y })
+        //this.lookDirection = this.input.getLookDirection({ x: this.x, y: this.y })
+        this.lookDirection.x = px - mx
+        this.lookDirection.y = py - my
+        this.lookDirection = utils.normalize(this.lookDirection)
     }
 
-    destroy() {
-        app.stage.removeChild(this.graphics)
+    shoot() {
+        const origin = { x: this.x, y: this.y };
+        console.log(this)
+        const direction = { x: this.lookDirection.x, y: this.lookDirection.y }
+        const bullet = new Bullet(origin, direction);
+        this.bullets.push(bullet)
+        bullet.setDestroyCallback(this.removeBullet.bind(this))
     }
 
-    update(dt) {
-        this.move(dt)
-        this.rotate()
+    removeBullet(bullet) {
+        const index = this.bullets.indexOf(bullet)
+        this.bullets.splice(index, 1)
+        console.log(this.bullets)
     }
 }

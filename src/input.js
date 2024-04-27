@@ -57,10 +57,6 @@ export default class Input {
         
     }
 
-    getLookDirection(position) {  
-        this.lookDirection.x = this.pointer.x - position.x
-        this.lookDirection.y = this.pointer.y - position.y
-        this.lookDirection = utils.normalize(this.lookDirection)
-    }
+   
     
 }

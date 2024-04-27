@@ -16,7 +16,7 @@ export default class PixiApp {
 
     create() {
         this.size = {
-            width: window.innerWidth, 
+            width: window.innerWidth,
             height: window.innerHeight,
         }
         this.app = new PIXI.Application({
@@ -29,7 +29,7 @@ export default class PixiApp {
 
         const background = new PIXI.Graphics();
         background.beginFill(0x000000)
-            .drawRect(0,0, this.size.width, this.size.height)
+            .drawRect(0, 0, this.size.width, this.size.height)
             .endFill();
 
         background.interactive = true;
@@ -37,8 +37,8 @@ export default class PixiApp {
 
         document.body.appendChild(this.app.view);
         this.app.renderer.backgroundColor = 0x23395D;
-        
-        this.app.renderer.resize(this.size.width,this.size.height)
+
+        this.app.renderer.resize(this.size.width, this.size.height)
 
         this.input = new Input(this.app);
         this.player = new Player();
@@ -48,11 +48,11 @@ export default class PixiApp {
         this.enemies = []
 
 
-        
-        
 
 
-        this.pointer = {x: 0, y: 0}
+
+
+        this.pointer = { x: 0, y: 0 }
 
         this.createEnemy()
 
@@ -63,6 +63,13 @@ export default class PixiApp {
         const enemy = new Enemy(this.player)
         this.enemies.push(enemy)
         enemy.setRandomPosition()
+        console.log('createEnemy')
+        enemy.setDestroyCallback(this.removeEnemy.bind(this))
+    }
+
+    removeEnemy(enemy) {
+        const index = this.enemies.indexOf(enemy)
+        this.enemies.splice(index, 1)
     }
 
 
@@ -71,15 +78,21 @@ export default class PixiApp {
 
 
         this.player.update(dt)
-        //const direction = this.input.getDirection()
-        this.enemies.forEach(e=> {
+        this.enemies.forEach(e => {
             e.update(dt)
-            const radiusSum = this.player.radius + e.radius
-            const distance = utils.distance(this.player, e)
-            if (radiusSum > distance) {
+            //console.log(window.utils.checkCollision(this.player, e))
+
+            if (window.utils.checkCollision(this.player, e)) {
                 this.player.destroy()
                 e.destroy()
             }
+            this.player.bullets.forEach(b => {
+                if (window.utils.checkCollision(b, e)) {
+                    //console.log(this.player.bullets.indexOf(b))
+                    b.destroy()
+                    e.destroy()
+                }
+            })
         })
     }
 

@@ -4,8 +4,8 @@ import Bullet from "./bullet.js";
 export default class Shoot {
     constructor(player) {
         this.input = new Input();
-        this.bullets = [];
-        this.direction = { x: 0, y: 0 };
+        //this.bullets = [];
+        //this.direction = { x: 0, y: 0 };
         this.onKeyDown = this.onKeyDown.bind(this);
         this.onKeyUp = this.onKeyUp.bind(this);
         this.keys = {}
