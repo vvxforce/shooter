@@ -3,6 +3,8 @@ import Player from './player.js';
 import Input from './input.js';
 import Enemy from './enemy.js';
 import './utils.js'
+import Observer from './observer.js';
+import UI from './ui.js';
 
 
 export default class PixiApp {
@@ -26,6 +28,12 @@ export default class PixiApp {
             antialias: true
         });
         window.app = this.app;
+        this.playing = true;
+
+        new Observer();
+        this.ui = new UI();
+
+        observer.subscribe('dead', this.onPlayerDie.bind(this))
 
         const background = new PIXI.Graphics();
         background.beginFill(0x000000)
@@ -45,16 +53,14 @@ export default class PixiApp {
         this.player.setPosition(this.size.width / 2, this.size.height / 2);
         this.app.stage.addChild(this.player.graphics)
 
+        this.timeSpawnInterval = 1;
+        this.timeSpawn = 0;
+
         this.enemies = []
-
-
-
-
-
 
         this.pointer = { x: 0, y: 0 }
 
-        this.createEnemy()
+        //this.createEnemy()
 
 
     }
@@ -63,7 +69,7 @@ export default class PixiApp {
         const enemy = new Enemy(this.player)
         this.enemies.push(enemy)
         enemy.setRandomPosition()
-        console.log('createEnemy')
+        //console.log('createEnemy')
         enemy.setDestroyCallback(this.removeEnemy.bind(this))
     }
 
@@ -72,18 +78,25 @@ export default class PixiApp {
         this.enemies.splice(index, 1)
     }
 
+    onPlayerDie() {
+        this.playing = false;
+    }
+
 
 
     loop(dt) {
-
-
+        if (!this.playing) { return }
+        const deltaTime = 1 / 60 * dt
+        this.timeSpawn += deltaTime;
+        if (this.timeSpawn >= this.timeSpawnInterval) {
+            this.timeSpawn = 0;
+            this.createEnemy()
+        }
         this.player.update(dt)
         this.enemies.forEach(e => {
             e.update(dt)
-            //console.log(window.utils.checkCollision(this.player, e))
-
             if (window.utils.checkCollision(this.player, e)) {
-                this.player.destroy()
+                this.player.hit()
                 e.destroy()
             }
             this.player.bullets.forEach(b => {

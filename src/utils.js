@@ -32,7 +32,7 @@ export default (function () {
         return radiusSum > distance
         }
     }
-    console.log(window.utils.normalize)
+    //console.log(window.utils.normalize)
 })()
 
 

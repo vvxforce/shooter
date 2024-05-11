@@ -2,7 +2,7 @@ import Input from "./input.js";
 import Shoot from "./shoot.js";
 import Entity from "./entity.js";
 
-export default class Enemy extends Entity{
+export default class Enemy extends Entity {
     constructor(player) {
         super()
         this.player = player;
@@ -24,13 +24,23 @@ export default class Enemy extends Entity{
 
     setRandomPosition() {
         //
-        const vector = {x:Math.random() -.5, y: Math.random() -.5}
-        vector.x = vector.x + Math.sign(vector.x ) * app.stage.width
-        vector.y = vector.y + Math.sign(vector.y ) * app.stage.height
-        console.log(vector.x * app.stage.width)
+        /*const vector = {x:Math.random() -.5, y: Math.random() -.5}
+        vector.x = vector.x + Math.sign(vector.x ) * window.innerWidth
+        vector.y = vector.y + Math.sign(vector.y ) * window.innerHeight
+        console.log(vector.x, vector.y)
+
         const rand = (min, max) => Math.random() * (max - min) + min
-        this.x = rand(0, app.stage.width)
-        this.y = rand(0, app.stage.height)
+        this.x = rand(0, app.stage.width) //vector.x 
+        this.y = //vector.y  rand(0, app.stage.height)*/
+        var windowWidth = window.innerWidth;
+        var windowHeight = window.innerHeight;
+
+
+        this.x = windowWidth * .5 + (Math.random() < 0.5 ? -1 : 1) * windowWidth * .5;
+        this.y = windowHeight * .5 + (Math.random() < 0.5 ? -1 : 1) * windowHeight * .5;
+        //console.log(this.y)
+
+
     }
 
     move(dt) {
@@ -40,10 +50,10 @@ export default class Enemy extends Entity{
         const x = this.x + direction.x * this.speed * dt;
         const y = this.y + direction.y * this.speed * dt;
         const canMove = this.checkInBorders(x, y)
-        if (canMove) {
+        //if (canMove) {
             this.x = x;
             this.y = y;
-        }
+      //  }*/
     }
 
     update(dt) {

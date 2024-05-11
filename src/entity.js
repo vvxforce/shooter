@@ -29,7 +29,7 @@ export default class Entity {
     }
 
     checkInBorders(x, y) {
-        return x + this.radius < app.stage.width && x - this.radius > 0 && y - this.radius > 0 && y + this.radius < app.stage.height
+        return x + this.radius < window.innerWidth && x - this.radius > 0 && y - this.radius > 0 && y + this.radius < window.innerHeight
     }
 
     move(dt) {

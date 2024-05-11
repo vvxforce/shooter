@@ -11,6 +11,7 @@ export default class Player extends Entity {
         this.bullets = [];
         this.input.addPointerDownHandler(this.shoot.bind(this));
         this.create()
+        this.health = 3;
     }
 
     create() {
@@ -24,7 +25,7 @@ export default class Player extends Entity {
 
     update(dt) {
         super.update(dt)
-        this.bullets.forEach(e=> {
+        this.bullets.forEach(e => {
             e.update(dt)
         })
 
@@ -56,7 +57,7 @@ export default class Player extends Entity {
 
     shoot() {
         const origin = { x: this.x, y: this.y };
-        console.log(this)
+        //console.log(this)
         const direction = { x: this.lookDirection.x, y: this.lookDirection.y }
         const bullet = new Bullet(origin, direction);
         this.bullets.push(bullet)
@@ -67,5 +68,14 @@ export default class Player extends Entity {
         const index = this.bullets.indexOf(bullet)
         this.bullets.splice(index, 1)
         console.log(this.bullets)
+    }
+
+    hit() {
+        this.health -= 1
+        if (this.health === 0) {
+            observer.fire('dead')
+            this.destroy()
+        } else { observer.fire('hit', this.health) }
+
     }
 }

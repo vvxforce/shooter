@@ -22,7 +22,7 @@ export default class Shoot {
     }
     onKeyDown(ev) {
         this.shoot()
-        console.log(ev.key)
+        //console.log(ev.key)
     }
     onKeyUp(ev) {
         this.keys[ev.key] = false;
